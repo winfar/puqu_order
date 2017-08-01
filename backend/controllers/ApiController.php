@@ -22,33 +22,32 @@ class ApiController extends Controller
         $this->enableCsrfValidation = false;
 
         //sign
-        if(empty($_POST['sign'])){
+        if(empty($_REQUEST['sign'])){
             $this->apiPrint(1,'缺少参数');
         }
 
-        $params = $_POST;
-
-        if($_POST['issign'] != 'true'){
+        if($_REQUEST['sign'] == 'true'){
             return true;
         }
-        else{
-            unset($params['sign']);
-            unset($params['issign']);
 
-            $sign = $this->param_signature($params);
+        $params = $_REQUEST;
 
-            if($sign != $_POST['sign']){
-                $this->apiPrint(2,'签名校验出错');
-            }
+        unset($params['sign']);
+        unset($params['issign']);
 
-            if (parent::beforeAction($action)) {
-                // if($this->verifyPermission($action) == true){
-                //     return true;
-                // }
-                return true;
-            }
-            return false;
+        $sign = $this->param_signature($params);
+
+        if($sign != $_REQUEST['sign']){
+            $this->apiPrint(2,'签名校验出错');
         }
+
+        if (parent::beforeAction($action)) {
+            // if($this->verifyPermission($action) == true){
+            //     return true;
+            // }
+            return true;
+        }
+        return false;
     }
 
     private function param_signature($normalized, $secret="a031881f64200b1d"){
@@ -118,13 +117,13 @@ class ApiController extends Controller
 
     public function actionInventorySync(){
         // 商品id
-        $product_id = Yii::$app->request->post('product_id');
+        $product_id = $_REQUEST['product_id'];
         // 规格id
-        $sku_id = Yii::$app->request->post('sku_id');
+        $sku_id = $_REQUEST['sku_id'];
         // 库存数
-        $qty = Yii::$app->request->post('qty');
+        $qty = $_REQUEST['qty'];
         // 同步类型（默认为全量更新）1-全量更新（即覆盖原库存）；2-增量更新（即增减原库存：正数为增，负数为减）；
-        $sync_type = Yii::$app->request->post('sync_type');
+        $sync_type = $_REQUEST['sync_type'];
 
         if(empty($product_id) || empty($sku_id) || empty($qty) || empty($sync_type)){
             $this->apiPrint(1,'参数错误');
@@ -189,6 +188,32 @@ class ApiController extends Controller
                 // return ['code'=>481,'data'=>'用户验证信息创建失败'];
             }
         }
+    }
+
+    public function actionGetProduct(){
+        // 商品id
+        $product_id = $_REQUEST['product_id'];
+
+        $product_id='6900090011101';
+
+        if(empty($product_id)){
+            $this->apiPrint(1,'参数错误');
+        }
+
+        $model = \backend\models\Goods::findOne(['code' => $product_id]);
+        if($model){
+            $product['id'] = $model->id;
+            $product['name'] = $model->name;
+            $product['qty'] = $model->stock;
+            $product['price'] = $model->price;
+            $product['code'] = $model->code;
+            $product['image_url'] = '';
+            $product['skus'] = [];
+
+            $result['product']=$product;
+            $this->apiPrint(0,'成功',$result);
+        }
+        $this->apiPrint(1,'商品不存在');
     }
 
     public function actionStockStatistics(){

@@ -1,4 +1,3 @@
-.sidebar-menu .treeview-menu>li {
-    margin: 0;
-    margin-left: 20px;
+.sidebar-menu .treeview-menu>li>a{
+    font-size: 12px;
 }

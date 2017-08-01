@@ -16,6 +16,12 @@ class LocalTestController extends \yii\base\Controller
 {
     public $layout = "lte_main";
 
+    public function actionSplit(){
+        $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date desc,id desc')->all();
+
+        var_dump($data);
+    }
+
     public function actionTest(){
         header("Content-Type:text/html;charset=utf-8");
 
@@ -77,12 +83,13 @@ class LocalTestController extends \yii\base\Controller
             ]);
         }
 
-        $time_beging = microtime(true);
-        echo $time_beging . '<br />';
-        Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','brand','specification','stock','stock_position','status','create_time','update_time'], $tdata)->execute();
-        $time_end = microtime(true);
-        echo $time_end . '<br />';
-        // var_dump($tdata);exit;
+        // $time_beging = microtime(true);
+        // echo $time_beging . '<br />';
+        // Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','brand','specification','stock','stock_position','status','create_time','update_time'], $tdata)->execute();
+        // $time_end = microtime(true);
+        // echo $time_end . '<br />';
+
+        var_dump($tdata[0]['name']);exit;
     }
 
     /**

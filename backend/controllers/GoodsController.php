@@ -37,7 +37,7 @@ class GoodsController extends BaseController
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Goods::find(),
+            'query' => Goods::find()->orderBy('create_time desc,id desc'),
         ]);
 
         return $this->render('index', [
@@ -138,7 +138,38 @@ class GoodsController extends BaseController
 
                     $data = $this->readFileFromGoods($file);
 
-                    Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','brand','specification','stock','stock_position','status','create_time','update_time'], $data)->execute();
+                    $count = Goods::find()->count();
+
+                    if($count > 0){
+                        foreach ($data as $key => $value) {
+                            $goods = Goods::findOne(['code' => $value['code']]);
+                            if($goods == null){
+                                //insert
+                                $goods = new Goods();
+                                $goods->code = $value['code'];
+                                $goods->status = 1;
+                                $goods->create_time = time();
+                            }
+
+                            $goods->name = $value['name'];
+                            $goods->category_name = $value['category_name'];
+                            $goods->brand = $value['brand'];
+                            $goods->specification = $value['specification'];
+                            $goods->price = $value['price'];
+                            $goods->stock = $value['stock'];
+                            $goods->stock_position = $value['stock_position'];
+                            $goods->update_time = time();
+
+                            Yii::info($goods->name);
+                            
+                            if($goods){
+                                $goods->save(false);
+                            }
+                        }
+                    }
+                    else{
+                        Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','brand','specification','stock','stock_position','status','create_time','update_time'], $data)->execute();
+                    }
 
                     $this->redirect(array('index'));  
                 } 
@@ -179,8 +210,9 @@ class GoodsController extends BaseController
                 'category_name'=>$value[7], 
                 'brand'=>$value[9], 
                 'specification'=>$value[15], 
-                'stock'=>$value[34], 
-                'stock_position'=>$value[40],
+                'price'=>$value[17], 
+                'stock'=>$value[35], 
+                'stock_position'=>$value[41],
                 'status'=>1,
                 'create_time'=>time(),
                 'update_time'=>time()

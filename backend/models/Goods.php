@@ -19,6 +19,7 @@ use Yii;
  * @property string $brand
  * @property string $supplier
  * @property string $specification
+ * @property string $price
  * @property string $stock
  * @property string $stock_position
  * @property integer $clear
@@ -41,6 +42,7 @@ class Goods extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'create_time', 'update_time', 'category_id', 'stock', 'clear', 'arrival_days'], 'integer'],
+            [['price'], 'number'],
             [['name', 'specification'], 'string', 'max' => 128],
             [['code', 'barcode', 'stock_position'], 'string', 'max' => 32],
             [['category_name', 'brand', 'supplier'], 'string', 'max' => 64],
@@ -66,6 +68,7 @@ class Goods extends \yii\db\ActiveRecord
             'brand' => '品牌',
             'supplier' => '供货商',
             'specification' => '规格名称',
+            'price' => '单价',
             'stock' => '真实库存数',
             'stock_position' => '库位',
             'clear' => '是否清库(1:是,0:否)',

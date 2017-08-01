@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'brand',
             'supplier',
             'specification',
+            'price',
             'stock',
             'stock_position',
             'clear',
@@ -40,22 +41,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'header'=> '到货天数',
                 'value' => function ($data) {
                     if($data->arrival_days == 0){
-                        $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
-                        if($model_config){
-                            $data->arrival_days = $model_config->value;
+                        static $common_days = 0;
+                        if($common_days == 0){
+                            $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
+                            if($model_config){
+                                $common_days = $model_config->value;
+                            }
                         }
-                        // if(empty($data->brand)){
-                        //     $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
-                        //     if($model_config){
-                        //         $data->arrival_days = $model_config->value;
-                        //     }
-                        // }
-                        // else{
-                        //     $model_brand = \backend\models\Brand::findOne(['name'=>$data->brand]);
-                        //     if($model_brand){
-                        //         $data->arrival_days = $model_brand->arrival_days;
-                        //     }
-                        // }
+                        $data->arrival_days = $common_days;
                     }
                     return $data->arrival_days; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
                 },
