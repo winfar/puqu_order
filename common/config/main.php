@@ -24,21 +24,21 @@ return [
         //     'charset' => 'utf8',
         // ],
 
-        'db' => [
-            'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=127.0.0.1;dbname=yiiboot_test',
-            'username' => 'root',
-            'password' => 'root',
-            'charset' => 'utf8',
-        ],
-
         // 'db' => [
         //     'class' => 'yii\db\Connection',
-        //     'dsn' => 'mysql:host=127.0.0.1;dbname=order',
+        //     'dsn' => 'mysql:host=127.0.0.1;dbname=yiiboot_test',
         //     'username' => 'root',
-        //     'password' => '',
+        //     'password' => 'root',
         //     'charset' => 'utf8',
         // ],
+
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=127.0.0.1;dbname=order',
+            'username' => 'root',
+            'password' => '123456',
+            'charset' => 'utf8',
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'viewPath' => '@common/mail',
