@@ -27,7 +27,7 @@ use yii\helpers\Url;
           <tr>
             <td>库存总额：<a href="#"><?= \backend\models\Goods::find()->sum('price') ?></a></td>
             <td>流通款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>0])->sum('price') ?></a></td>
-            <td>清库款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>1])->sum('price') ?></a></td>
+            <td>清库款：<a href="#"><?php $rlt=\backend\models\Goods::find()->where(['clear'=>1])->sum('price'); echo is_null($rlt)?0:$rlt ?></a></td>
           </tr>
           <tr>
             <td>缺货总数：<a href="#"><?=0000 ?></a></td>
