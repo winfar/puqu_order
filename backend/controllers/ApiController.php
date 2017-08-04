@@ -21,12 +21,14 @@ class ApiController extends Controller
     {
         $this->enableCsrfValidation = false;
 
+        $req_sign = $_REQUEST['sign'];
+
         //sign
-        if(empty($_REQUEST['sign'])){
+        if(empty($req_sign)){
             $this->apiPrint(1,'缺少参数');
         }
 
-        if($_REQUEST['sign'] == 'true'){
+        if($req_sign == 'true'){
             return true;
         }
 
@@ -37,7 +39,11 @@ class ApiController extends Controller
 
         $sign = $this->param_signature($params);
 
-        if($sign != $_REQUEST['sign']){
+        Yii::info('req:'.$_REQUEST);
+        Yii::info('req_sign:'.$req_sign);
+        Yii::info('sign:'.$sign);
+
+        if($sign != $req_sign){
             $this->apiPrint(2,'签名校验出错');
         }
 
