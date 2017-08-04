@@ -110,7 +110,7 @@ class ApiController extends Controller
         if($err_code != 0){
             $result['success'] = false;
         }
-
+        Yii::info(json_encode($result));
         exit(json_encode($result));
 
     }
@@ -194,11 +194,13 @@ class ApiController extends Controller
         // 商品id
         $product_id = $_REQUEST['product_id'];
 
-        $product_id='6900090011101';
+        // $product_id='6900090011101';
 
         if(empty($product_id)){
             $this->apiPrint(1,'参数错误');
         }
+
+        Yii::info('product_id:'.$product_id);
 
         $model = \backend\models\Goods::findOne(['code' => $product_id]);
         if($model){
