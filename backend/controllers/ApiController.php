@@ -39,7 +39,7 @@ class ApiController extends Controller
 
         $sign = $this->param_signature($params);
 
-        Yii::info('req:'.$_REQUEST);
+        Yii::info('req:'. json_encode($_REQUEST));
         Yii::info('req_sign:'.$req_sign);
         Yii::info('sign:'.$sign);
 
