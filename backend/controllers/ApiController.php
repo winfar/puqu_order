@@ -110,7 +110,7 @@ class ApiController extends Controller
         if($err_code != 0){
             $result['success'] = false;
         }
-        Yii::info(json_encode($result));
+        Yii::info($result);
         exit(json_encode($result));
 
     }
