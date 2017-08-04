@@ -34,6 +34,7 @@ class ApiController extends Controller
 
         $params = $_REQUEST;
 
+        unset($params['r']);
         unset($params['sign']);
         unset($params['issign']);
 
@@ -54,6 +55,15 @@ class ApiController extends Controller
             return true;
         }
         return false;
+    }
+
+    public function actionSignTest(){
+        // $params = json_decode('{"r":"api\/inventory-sync","timestamp":"2017-08-04 13:28:36","app_key":"SGERP","v":"1.0","page_no":"1","page_size":"1","start_time":"2017-08-04 12:28:36","end_time":"2017-08-04 12:28:36","status":"2","sign":"0B1E5B50B914CDB3A2FFE515B21F4F45"}',true);
+        // unset($params['r']);
+        // unset($params['sign']);
+        // unset($params['issign']);
+        // $sign = $this->param_signature($params);
+        // echo $sign;exit;
     }
 
     private function param_signature($normalized, $secret="a031881f64200b1d"){

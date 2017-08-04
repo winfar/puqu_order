@@ -1,6 +1,9 @@
 # yii console command
 /yii
 
+# vs code
+.vscode/
+
 # phpstorm project files
 .idea
 
