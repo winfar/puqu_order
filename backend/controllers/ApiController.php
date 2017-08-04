@@ -155,7 +155,7 @@ class ApiController extends Controller
             }
         }
 
-        $model = \backend\models\Goods::findOne(['code' => $product_id]);
+        $model = \backend\models\Goods::findOne($product_id);
         if($model){
 
             $stock_before = $model->stock;
@@ -203,6 +203,9 @@ class ApiController extends Controller
                 $this->apiPrint(1,'更新失败');
                 // return ['code'=>481,'data'=>'用户验证信息创建失败'];
             }
+        }
+        else{
+            $this->apiPrint(1,'商品不存在，id:'.$product_id);
         }
     }
 
