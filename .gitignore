@@ -34,7 +34,7 @@ phpunit.phar
 .svn/
 .sonar/.sonartmp/caches/persistit_tempvol_5161417842659489665.tmp
 sonar-project.properties
-
+log/
 
 /common/config/main.php
 /backend/web/uploads/

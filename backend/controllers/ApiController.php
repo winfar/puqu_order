@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\data\Pagination;
 
 /**
  * ApiController implements the CRUD actions for Api model.
@@ -235,6 +236,53 @@ class ApiController extends Controller
             $this->apiPrint(0,'成功',$result);
         }
         $this->apiPrint(1,'商品不存在');
+    }
+
+    public function actionGetProductList(){
+        // 商品id
+        $page_no = $_REQUEST['page_no'];
+        $page_size = $_REQUEST['page_size'];
+        $status = $_REQUEST['status'];
+
+        // $product_id='6900090011101';
+
+        if(empty($page_no) || $page_no <= 0){
+            $page_no = 1;
+        }
+
+        if(empty($page_size) || $page_size <= 0){
+            $page_size = 10;
+        }
+
+        if(empty($status) || $status <= 0){
+            $status = 0;
+        }
+
+        // Yii::info('product_id:'.$product_id);
+
+        // $model = \backend\models\Goods::findOne(['code' => $product_id]);
+
+        $data = \backend\models\Goods::find()->andWhere(['status' => 1, 'clear' => 0]);
+        $pages = new Pagination(['totalCount' => $data->count(), 'pageSize' => $page_size]);
+        $pages->setPage($page_no-1);
+        $model = $data->offset($pages->offset)->limit($pages->limit)->all();
+
+        $products = [];
+        foreach ($model as $key => $value) {
+            $products[$key]['id'] = $value->id;
+            $products[$key]['name'] = $value->name;
+            $products[$key]['qty'] = $value->stock;
+            $products[$key]['price'] = $value->price;
+            $products[$key]['code'] = $value->code;
+            $products[$key]['image_url'] = '';
+            $products[$key]['skus'] = [];
+        }
+
+        $result['product']=$products;
+        $result['total_count'] = $pages->totalCount;
+        $this->apiPrint(0,'成功',$result);
+
+        // $this->apiPrint(1,'商品不存在');
     }
 
     public function actionStockStatistics(){
