@@ -561,7 +561,7 @@ if($otherMenu == false){
 <!-- AdminLTE for demo purposes -->
 <script src="<?=Url::base()?>/dist/js/demo.js"></script>
 
-
+<script src="<?=Url::base()?>/dist/js/common.js"></script>
 </body>
 
 <?php if(isset($this->blocks['footer']) == true):?>

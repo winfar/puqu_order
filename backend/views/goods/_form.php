@@ -10,7 +10,12 @@ use yii\widgets\ActiveForm;
 
 <div class="goods-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'fieldConfig'=>[
+            // 'template'=> "{label}\n<div class=\"col-sm-8\">{input}</div>\n{error}"
+        ]
+    ]);
+    ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -32,7 +37,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'stock_position')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'status')->textInput() ?>
+    <?= $form->field($model, 'clear')->checkBox() ?>
+
+    <?= $form->field($model, 'status')->checkBox() ?>
 
     <!-- <?= $form->field($model, 'create_time')->textInput(['maxlength' => true]) ?> -->
 

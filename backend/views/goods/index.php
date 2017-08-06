@@ -1,5 +1,6 @@
 <?php
 
+use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -9,15 +10,24 @@ use yii\grid\GridView;
 $this->title = 'Goods';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="goods-index">
+<div class="goods-index" style="margin: 15px;">
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
-    <p style="margin-top:20px;">
-        <?= Html::a('Create Goods', ['create'], ['class' => 'btn btn-success']) ?>
+    <?php $form = ActiveForm::begin();?>
+    <div style="margin-top:20px;">
+        <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
+        <!-- <input type="submit" value="查询" class="btn btn-success"> -->
+        <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
+        <a href="resources/templet_goods.xls" class="btn btn-success" target="_blank">下载模板</a>
         <?= Html::a('导入商品', ['import'], ['class' => 'btn btn-success']) ?>
-        <!--<a href="import" class="btn btn-success">导入商品</a>-->
-    </p>
+        <p class="pull-right">
+            <?= Html::a('添加商品', ['create'], ['class' => 'btn btn-success']) ?>
+            <!--<a href="import" class="btn btn-success">导入商品</a>-->
+        </p>
+    </div>
+    <?php ActiveForm::end(); ?>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
@@ -30,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'category_name',
             'brand',
             'supplier',
-            'specification',
+            // 'specification',
             'price',
             'stock',
             'stock_position',
@@ -59,8 +69,36 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'create_time',
                 'format' => ['date', 'php:Y-m-d H:i:s']
             ],
+            [
+                'attribute' => 'update_time',
+                'format' => ['date', 'php:Y-m-d H:i:s']
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn','header'=> '操作'],
         ],
     ]); ?>
 </div>
+<script>
+    $(function(){        
+        $("#btn_query").on('click',function(){
+            debugger;
+            var k = $('#keywords').val();
+            var url = location.href;
+            if(k!=""){
+                if(url.indexOf("&k=") > 0){
+                    url = changeUrlArg(url, "k", k);
+                }else{
+                    url += "&k=" + k;
+                }
+            }
+            location.href = url;
+        });
+
+        var keywords = $('#keywords').val();
+        if(keywords != ""){
+            var regexp = new RegExp(keywords,"gim");
+            var objs = $(".grid-view > table:contains('"+keywords+"')");
+            objs.html(objs.html().replace(regexp,"<b style='background-color:yellow'>"+keywords+"</b>"));
+        }
+    });
+</script>

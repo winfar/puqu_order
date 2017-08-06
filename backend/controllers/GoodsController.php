@@ -15,6 +15,7 @@ use yii\filters\VerbFilter;
 class GoodsController extends BaseController
 {
     public $layout = "lte_main";
+
     /**
      * @inheritdoc
      */
@@ -36,8 +37,21 @@ class GoodsController extends BaseController
      */
     public function actionIndex()
     {
+        $keywords = trim(Yii::$app->request->get('k'));
+        // var_dump($keywords);exit;
+        $condition = [];
+        if(!empty($keywords))
+        {
+            $condition = [
+                'or',
+                ['like','code',$keywords],
+                ['like','name',$keywords],
+                // ['like','mobile',$mobile],
+            ];
+        }
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Goods::find()->orderBy('create_time desc,id desc'),
+            'query' => Goods::find()->andWhere($condition)->orderBy('create_time desc,code,id desc'),
         ]);
 
         return $this->render('index', [
@@ -123,6 +137,18 @@ class GoodsController extends BaseController
         }
     }
 
+    public function actionSearch($code){
+
+        $code = Yii::$app->request->post('code');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Goods::find()->where(['code'=>$code])->orderBy('create_time desc,id desc'),
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     public function actionImport()  
     {  
         $model = new \common\models\UploadForm();  
@@ -137,6 +163,7 @@ class GoodsController extends BaseController
                 if(in_array($model->file->extension, array('xls','xlsx'))){
 
                     $data = $this->readFileFromGoods($file);
+                    // var_dump($data);exit;
 
                     $count = Goods::find()->count();
 
@@ -154,13 +181,16 @@ class GoodsController extends BaseController
                             $goods->name = $value['name'];
                             $goods->category_name = $value['category_name'];
                             $goods->brand = $value['brand'];
+                            $goods->supplier = $value['supplier'];
                             $goods->specification = $value['specification'];
                             $goods->price = $value['price'];
                             $goods->stock = $value['stock'];
                             $goods->stock_position = $value['stock_position'];
+                            $goods->clear = $value['clear'];
+                            $goods->arrival_days = $value['arrival_days'];
                             $goods->update_time = time();
 
-                            Yii::info($goods->name);
+                            // Yii::info($goods->name);
                             
                             if($goods){
                                 $goods->save(false);
@@ -168,7 +198,8 @@ class GoodsController extends BaseController
                         }
                     }
                     else{
-                        Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','brand','specification','stock','stock_position','status','create_time','update_time'], $data)->execute();
+                        //字段顺序与读出的excel顺序一致
+                        Yii::$app->db->createCommand()->batchInsert(Goods::tableName(), ['code','name','category_name','supplier','specification','brand','price','stock_position','stock','clear','arrival_days','status','create_time','update_time'], $data)->execute();
                     }
 
                     $this->redirect(array('index'));  
@@ -205,14 +236,17 @@ class GoodsController extends BaseController
         $tdata = [];
         foreach ($data as $key => $value) {
             array_push($tdata, [
-                'code'=>$value[1], 
-                'name'=>$value[2], 
-                'category_name'=>$value[7], 
-                'brand'=>$value[9], 
-                'specification'=>$value[15], 
-                'price'=>$value[17], 
-                'stock'=>$value[35], 
-                'stock_position'=>$value[41],
+                'code'=>$value[0], 
+                'name'=>$value[1], 
+                'category_name'=>$value[2], 
+                'supplier'=>$value[3],
+                'specification'=>'',  
+                'brand'=>$value[4], 
+                'price'=>$value[5], 
+                'stock_position'=>$value[6],
+                'stock'=>$value[7], 
+                'clear'=>empty($value[8]) ? 0 : $value[8]=='是' ? 1 : 0, 
+                'arrival_days'=>empty($value[9]) ? 0 : $value[9], 
                 'status'=>1,
                 'create_time'=>time(),
                 'update_time'=>time()
