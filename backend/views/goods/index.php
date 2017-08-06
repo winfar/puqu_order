@@ -81,16 +81,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <script>
     $(function(){        
         $("#btn_query").on('click',function(){
-            debugger;
-            var k = $('#keywords').val();
+            
             var url = location.href;
-            if(k!=""){
-                if(url.indexOf("&k=") > 0){
-                    url = changeUrlArg(url, "k", k);
-                }else{
-                    url += "&k=" + k;
-                }
+            var k = $.trim($('#keywords').val());
+            
+            if(url.indexOf("&k=") > 0){
+                url = changeUrlArg(url, "k", k);
+            }else{
+                url += "&k=" + k;
             }
+            
             location.href = url;
         });
 
