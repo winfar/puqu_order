@@ -17,9 +17,84 @@ class LocalTestController extends \yii\base\Controller
     public $layout = "lte_main";
 
     public function actionSplit(){
-        $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date desc,id desc')->all();
+        // echo strstr("Hello world!","world",true);exit;
+        $list = [];
 
-        var_dump($data);
+        $goods = Goods::find()->orderBy('create_time desc,id desc')->all();
+        $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date,id')->all();
+
+        foreach ($goods as $key => $value) {
+
+            // echo '$value->id:'.$value->id . '<br>';
+
+            $list[$key]['id'] = $value->id;
+            $list[$key]['name'] = $value->name;
+            $list[$key]['stock'] = $value->stock;
+            $days = [];
+            $stock_average=0;
+            $stock_sum=0;
+            $stock_first=0;
+            $stock_last=0;
+            $stock_in=0;
+            $stock_out=0;
+            $stock_tmp=0;
+            foreach ($data as $k => $v) {
+                // echo '$v->goods_id_stocks:',$v->goods_id_stocks . '<br>';
+                
+                $id_in_str = strstr($v->goods_id_stocks,$value->id.'|');
+
+                // echo '$id_in_str:'.$id_in_str. '<br>';
+
+                $day_stock = 0;
+                if(strlen($id_in_str) > 0){
+                    if(strpos($id_in_str, ',')){
+                        $day_stock = explode('|',strstr($id_in_str,',',true))[1];
+                    }
+                    else{
+                        $day_stock = explode('|',$id_in_str)[1];
+                    }
+
+                    // echo '$day_stock:'.$day_stock. '<br>';
+                }
+                array_push($days,intval($day_stock));
+                // $list[$key][$v->create_date] = intval($day_stock);
+
+                $stock_sum = $stock_sum + $day_stock;
+                if($day_stock > $stock_tmp){
+                    $stock_in += $day_stock - $stock_tmp;
+                }
+
+                if($day_stock < $stock_tmp){
+                    $stock_out += $stock_tmp - $day_stock;
+                }
+
+                $stock_tmp = $day_stock;
+
+                if($k==0){
+                    $stock_first = $day_stock;
+                }
+
+                if($k==count($data)-1){
+                    $stock_last = $day_stock;
+                }
+            }
+            $list[$key]['days'] = $days;
+
+            // $list[$key]['stock_sum'] = $stock_sum;
+
+            //也可以时间内最大值减去最后一天的值为当前进货数
+            $list[$key]['stock_in'] = $stock_in;
+            $list[$key]['stock_out'] = $stock_out;
+            //平均存货量
+            $stock_average = $stock_first + $stock_last / 2;
+            $stock_average = $stock_average == 0 ? $stock_in / count($days) : $stock_average;
+            $list[$key]['stock_average'] = $stock_average;
+            //库存周转率
+            $list[$key]['stock_turnover'] = $stock_average == 0 ? 0 : $stock_out / $stock_average;
+            //库存周转天数
+            $list[$key]['stock_turnover_days'] = $list[$key]['stock_turnover'] == 0 ? 120 : count($days) / $list[$key]['stock_turnover']; 
+        }
+        var_dump($list);
     }
 
     public function actionTest(){
