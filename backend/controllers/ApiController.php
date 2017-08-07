@@ -278,7 +278,7 @@ class ApiController extends Controller
             $products[$key]['skus'] = [];
         }
 
-        $result['product']=$products;
+        $result['products']=$products;
         $result['total_count'] = $pages->totalCount;
         $this->apiPrint(0,'成功',$result);
 
