@@ -64,7 +64,7 @@ class Goods extends \yii\db\ActiveRecord
             'code' => '商家编码',
             'barcode' => '条码',
             'category_id' => 'Category ID',
-            'category_name' => '分类',
+            'category_name' => '品牌分类',
             'brand' => '品牌',
             'supplier' => '供货商',
             'specification' => '规格名称',

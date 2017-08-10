@@ -27,9 +27,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'category_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'brand')->textInput(['maxlength' => true]) ?>
+    <!-- <?= $form->field($model, 'brand')->textInput(['maxlength' => true]) ?> -->
 
-    <?= $form->field($model, 'supplier')->textInput(['maxlength' => true]) ?>
+    <!-- <?= $form->field($model, 'supplier')->textInput(['maxlength' => true]) ?> -->
 
     <?= $form->field($model, 'specification')->textInput(['maxlength' => true]) ?>
 

@@ -38,8 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'barcode',
             // 'category_id',
             'category_name',
-            'brand',
-            'supplier',
+            // 'brand',
+            // 'supplier',
             // 'specification',
             'price',
             'stock',
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'arrival_days',
             [
                 'class' => 'yii\grid\DataColumn', //由于是默认类型，可以省略 
-                'header'=> '到货天数',
+                'header'=> '<a href="javascript:;">到货天数</a>',
                 'value' => function ($data) {
                     if($data->arrival_days == 0){
                         static $common_days = 0;
@@ -74,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => ['date', 'php:Y-m-d H:i:s']
             ],
 
-            ['class' => 'yii\grid\ActionColumn','header'=> '操作'],
+            ['class' => 'yii\grid\ActionColumn','header'=> '<a href="javascript:;">操作</a>'],
         ],
     ]); ?>
 </div>
