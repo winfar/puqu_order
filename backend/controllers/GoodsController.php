@@ -150,23 +150,81 @@ class GoodsController extends BaseController
     }
 
     public function actionStock(){
+
+        static $common_days = 0;
         $list = [];
 
+        $sql = 'select g.id,g.`code`,g.`name`,g.stock,g.arrival_days,sum(stock_after-stock_before) out_qty
+                from goods g
+                left join goods_stock_record sr on g.id=sr.goods_id
+                where sr.create_time <=1502380800 
+                GROUP BY goods_id
+                order by stock,out_qty';
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Goods::find()->andWhere($condition)->orderBy('create_time desc,code,id desc'),
+            'query' => Goods::findBySql($sql),
         ]);
 
-        return $this->render('index', [
+        return $this->render('stock', [
             'dataProvider' => $dataProvider,
         ]);
+        
+        /*
         $goods = Goods::find()->orderBy('create_time desc,id desc')->all();
-        $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date,id')->all();
+        // $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date,id')->all();
+        
 
+        foreach ($goods as $key => $value) {
+            $condition=['goods_id'=>$value->id];
+            $data = \backend\models\GoodsStockRecord::find()->andWhere($condition)->orderBy('create_time,id')->all();
+
+            $list[$key]['id'] = $value->id;
+            $list[$key]['code'] = $value->code;
+            $list[$key]['name'] = $value->name;
+            $list[$key]['stock'] = $value->stock;
+
+            $arrival_days = $value->arrival_days;
+
+            if($arrival_days == 0){
+                
+                if($common_days == 0){
+                    $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
+                    if($model_config){
+                        $common_days = $model_config->value;
+                    }
+                }
+
+                $arrival_days = $common_days;
+            }
+
+            $list[$key]['arrival_days'] = $arrival_days;
+
+            $stock_curr = $value->stock;
+            $stock_in=0;
+            $stock_out=0;
+            $stock_tmp=0;
+            foreach ($data as $k => $v) {
+
+                if($v->stock_after > $stock_tmp){
+                    $stock_out += $v->stock_after - $stock_tmp;
+                }
+
+                // if($day_stock < $stock_tmp){
+                //     $stock_out += $stock_tmp - $day_stock;
+                // }
+
+                $stock_tmp = $v->stock_after;
+            }
+            
+        }
+*/
+        /*
         foreach ($goods as $key => $value) {
 
             // echo '$value->id:'.$value->id . '<br>';
 
             $list[$key]['id'] = $value->id;
+            $list[$key]['code'] = $value->code;
             $list[$key]['name'] = $value->name;
             $list[$key]['stock'] = $value->stock;
             $days = [];
@@ -233,7 +291,7 @@ class GoodsController extends BaseController
             $list[$key]['stock_turnover'] = $stock_average == 0 ? 0 : $stock_out / $stock_average;
             //库存周转天数
             $list[$key]['stock_turnover_days'] = $list[$key]['stock_turnover'] == 0 ? 120 : count($days) / $list[$key]['stock_turnover']; 
-        }
+        }*/
         var_dump($list);
     }
 

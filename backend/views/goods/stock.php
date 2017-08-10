@@ -23,13 +23,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'code',
             'name',
             'stock',
-            'days',
             [
                 'class' => 'yii\grid\DataColumn', //由于是默认类型，可以省略 
                 'header'=> '<a href="javascript:;">到货天数</a>',
                 'value' => function ($data) {
+                    static $common_days = 0;
                     if($data->arrival_days == 0){
-                        static $common_days = 0;
                         if($common_days == 0){
                             $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
                             if($model_config){
@@ -41,18 +40,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->arrival_days; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
                 },
             ],
-            'status',
-            // 'create_time:datetime',
             [
-                'attribute' => 'create_time',
-                'format' => ['date', 'php:Y-m-d H:i:s']
-            ],
-            [
-                'attribute' => 'update_time',
-                'format' => ['date', 'php:Y-m-d H:i:s']
-            ],
-
-            ['class' => 'yii\grid\ActionColumn','header'=> '<a href="javascript:;">操作</a>'],
+                'header'=> '<a href="javascript:;">出货量</a>',
+                'value' => function ($data) {
+                    return $data->out_qty; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
+                },
+            ]
         ],
     ]); ?>
 </div>
