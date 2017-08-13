@@ -59,16 +59,24 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 </div>
 <script>
-    $(function(){        
+    $(function(){    
+        $('#date-range').val(<?= Yii::$app->request->get('d') ?>);    
         $("#btn_query").on('click',function(){
             
             var url = location.href;
             var k = $.trim($('#keywords').val());
+            var d = $('#date-range').val();
             
             if(url.indexOf("&k=") > 0){
                 url = changeUrlArg(url, "k", k);
             }else{
                 url += "&k=" + k;
+            }
+
+            if(url.indexOf("&d=") > 0){
+                url = changeUrlArg(url, "d", d);
+            }else{
+                url += "&d=" + d;
             }
             
             location.href = url;

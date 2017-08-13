@@ -16,9 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
         <div class="form-group">
+            <a href="resources/templet_goods.xls" class="btn btn-success" target="_blank">下载模板</a>
+            <br><br>
             <!--<input type="file" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">-->
             <?= $form->field($model, 'file')->fileInput(['accept'=>'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) ?>
-            <br>
+            <br><br>
             <?= Html::submitButton('import', ['class' => 'btn btn-primary']) ?>
         </div>
         <?php $form = ActiveForm::end(); ?>

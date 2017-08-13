@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
         <!-- <input type="submit" value="查询" class="btn btn-success"> -->
         <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
-        <a href="resources/templet_goods.xls" class="btn btn-success" target="_blank">下载模板</a>
         <?= Html::a('导入商品', ['import'], ['class' => 'btn btn-success']) ?>
         <p class="pull-right">
             <?= Html::a('添加商品', ['create'], ['class' => 'btn btn-success']) ?>
