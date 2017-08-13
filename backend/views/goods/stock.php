@@ -46,7 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'header'=> '<a href="javascript:;">是否需要进货</a>',
                 'value' => function ($data) {
-                    return $data->stock - $data->out_qty_average * ($data->arrival_days+1); 
+                    $is_in = ($data->stock - $data->out_qty_average * ($data->arrival_days+1)) > 0 ? '' : '<span style="color:red">缺</span>';
+                    return $is_in; 
                 },
             ],
             [
