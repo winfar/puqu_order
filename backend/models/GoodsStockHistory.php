@@ -8,8 +8,11 @@ use Yii;
  * This is the model class for table "goods_stock_history".
  *
  * @property string $id
- * @property string $create_date
- * @property string $goods_id_stocks
+ * @property integer $create_time
+ * @property integer $update_time
+ * @property integer $stock_date
+ * @property string $code
+ * @property string $stock
  */
 class GoodsStockHistory extends \yii\db\ActiveRecord
 {
@@ -27,8 +30,8 @@ class GoodsStockHistory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['create_date'], 'safe'],
-            [['goods_id_stocks'], 'string'],
+            [['create_time', 'update_time', 'stock_date', 'stock'], 'integer'],
+            [['code'], 'string', 'max' => 32],
         ];
     }
 
@@ -39,8 +42,11 @@ class GoodsStockHistory extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'create_date' => '创建时间',
-            'goods_id_stocks' => '商品库存集合',
+            'create_time' => '创建时间',
+            'update_time' => '修改时间',
+            'stock_date' => '库存日期',
+            'code' => '商家编码',
+            'stock' => '库存数',
         ];
     }
 }

@@ -12,8 +12,25 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="goods-index" style="margin: 15px;">
 
+    <?php $form = ActiveForm::begin();?>
     <div style="margin-top:20px;">
+        <select id="date-range" name="date-range" class="">
+            <option value="7">7天</option>
+            <option value="30">30天</option>
+            <option value="60">60天</option>
+            <option value="90">90天</option>
+        </select>
+        <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
+        <!-- <input type="submit" value="查询" class="btn btn-success"> -->
+        <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
+        <?= Html::a('导入库存', ['import-stock'], ['class' => 'btn btn-success']) ?>
+        <p class="pull-right">
+            是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15
+            
+            <!-- <?= Html::a('导出', ['export'], ['class' => 'btn btn-success']) ?> -->
+        </p>
     </div>
+    <?php ActiveForm::end(); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -23,27 +40,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'code',
             'name',
             'stock',
+            'arrival_days',
+            'out_qty',
+            'out_qty_average',
             [
-                'class' => 'yii\grid\DataColumn', //由于是默认类型，可以省略 
-                'header'=> '<a href="javascript:;">到货天数</a>',
+                'header'=> '<a href="javascript:;">是否需要进货</a>',
                 'value' => function ($data) {
-                    static $common_days = 0;
-                    if($data->arrival_days == 0){
-                        if($common_days == 0){
-                            $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
-                            if($model_config){
-                                $common_days = $model_config->value;
-                            }
-                        }
-                        $data->arrival_days = $common_days;
-                    }
-                    return $data->arrival_days; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
+                    return $data->stock - $data->out_qty_average * ($data->arrival_days+1); 
                 },
             ],
             [
-                'header'=> '<a href="javascript:;">出货量</a>',
+                'header'=> '<a href="javascript:;">建议订货量</a>',
                 'value' => function ($data) {
-                    return $data->out_qty; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
+                    return $data->out_qty_average * 15; 
                 },
             ]
         ],

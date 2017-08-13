@@ -151,18 +151,35 @@ class GoodsController extends BaseController
 
     public function actionStock(){
 
-        static $common_days = 0;
-        $list = [];
+        $days = Yii::$app->request->get('d');
 
-        $sql = 'select g.id,g.`code`,g.`name`,g.stock,g.arrival_days,sum(stock_after-stock_before) out_qty
+        if(empty($days)){
+            $days = 7;
+        }
+
+        $start_time = strtotime(date('Ymd')) - 60 * 60 * 24 * $days;
+
+        $common_days = 0;
+
+        $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
+        if($model_config){
+            $common_days = $model_config->value;
+        }
+
+        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
                 from goods g
-                left join goods_stock_record sr on g.id=sr.goods_id
-                where sr.create_time <=1502380800 
-                GROUP BY goods_id
-                order by stock,out_qty';
+                left join goods_stock_history gsh on g.`code`=gsh.`code`
+                where gsh.stock_date <= UNIX_TIMESTAMP()
+                and gsh.stock_date >='.$start_time.'
+				and g.clear=0
+                GROUP BY g.`code`
+                order by g.stock,out_qty';
 
         $dataProvider = new ActiveDataProvider([
             'query' => Goods::findBySql($sql),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         return $this->render('stock', [
@@ -298,7 +315,6 @@ class GoodsController extends BaseController
     public function actionImport()  
     {  
         $model = new \common\models\UploadForm();  
-        $ok = "";
         // if ($model->load(Yii::$app->request->post())) {  
         if(Yii::$app->request->isPost){
             $model->file = \yii\web\UploadedFile::getInstance($model, 'file');
@@ -358,6 +374,72 @@ class GoodsController extends BaseController
         }  
     }  
 
+    public function actionImportStock(){
+        $model_upload = new \common\models\UploadForm();
+        $error_msg = '';
+
+        if(Yii::$app->request->isPost){
+            $stock_date = Yii::$app->request->post('date');
+            // echo strtotime($stock_date);exit;
+            //添加日期判断
+            if(empty($stock_date)){
+                $error_msg = '日期不能为空';
+            }
+            else{
+                $stock_date = strtotime($stock_date);
+                
+                $model_upload->file = \yii\web\UploadedFile::getInstance($model_upload, 'file');
+
+                $file_name = 'goods_stock_' . date('Ymd',time()).rand(1000,9999);
+                
+                $file = $model_upload->uploadByFileName($file_name);
+                if ($file) {
+                    // 文件上传成功
+
+                    if(in_array($model_upload->file->extension, array('xls','xlsx'))){
+
+                        $data = $this->readFileFromGoodsStock($file);
+                        // var_dump($data);exit;
+
+                        foreach ($data as $key => $value) {
+                            $goods_stock_history = \backend\models\GoodsStockHistory::findOne(['code' => $value['code']]);
+                            if($goods_stock_history == null){
+                                //insert
+                                $goods_stock_history = new \backend\models\GoodsStockHistory();
+                                $goods_stock_history->create_time = time();
+                            }
+
+                            $goods_stock_history->stock_date = $stock_date;
+                            $goods_stock_history->code = $value['code'];
+                            $goods_stock_history->stock = $value['stock'];
+                            $goods_stock_history->update_time = time();
+                            
+                            if($goods_stock_history){
+                                $goods_stock_history->save(false);
+                            }
+                        }
+
+                        $this->redirect(array('stock'));  
+                    } 
+                }   
+            }    
+        }   
+
+        // $condition = [];
+        // $dataProvider = new ActiveDataProvider([
+        //     'query' => Goods::find()->andWhere($condition)->orderBy('create_time desc,code,id desc'),
+        // ]);
+
+        // return $this->render('import-stock', [
+        //     'dataProvider' => $dataProvider,
+        // ]);
+
+        return $this->render('import_stock', [  
+            'model_upload' => $model_upload,  
+            'error_msg' => $error_msg
+        ]); 
+    }
+
     private function readFileFromGoods($file){
         $time_beging = 0;
         $time_end = 0;
@@ -396,6 +478,30 @@ class GoodsController extends BaseController
                 'status'=>1,
                 'create_time'=>time(),
                 'update_time'=>time()
+            ]);
+        }
+
+        // var_dump($tdata);exit;
+        return $tdata;
+    }
+
+    private function readFileFromGoodsStock($file){
+        $time_beging = 0;
+        $time_end = 0;
+
+        // $file = 'uploads/201707179604.xls';
+
+        $excelFile = Yii::getAlias('@backend/web/' . $file);//获取文件名  
+
+        // $phpexcel = new \PHPExcel();  
+
+        $data = \common\utils\CommonFun::readFromExcel($excelFile, $startRow = 2, $endRow = 3000);
+
+        $tdata = [];
+        foreach ($data as $key => $value) {
+            array_push($tdata, [
+                'code'=>$value[0], 
+                'stock'=>$value[1]
             ]);
         }
 

@@ -27,6 +27,11 @@ use Yii;
  */
 class Goods extends \yii\db\ActiveRecord
 {
+    public $out_qty;
+    public $is_stock_in;
+    public $order_qty;
+    public $out_qty_average;
+
     /**
      * @inheritdoc
      */
@@ -41,7 +46,7 @@ class Goods extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'create_time', 'update_time', 'category_id', 'stock', 'clear', 'arrival_days','out_qty'], 'integer'],
+            [['status', 'create_time', 'update_time', 'category_id', 'stock', 'clear', 'arrival_days'], 'integer'],
             [['price'], 'number'],
             [['name', 'specification'], 'string', 'max' => 128],
             [['code', 'barcode', 'stock_position'], 'string', 'max' => 32],
@@ -69,11 +74,12 @@ class Goods extends \yii\db\ActiveRecord
             'supplier' => '供货商',
             'specification' => '规格名称',
             'price' => '单价',
-            'stock' => '真实库存数',
+            'stock' => '实际库存数',
             'stock_position' => '库位',
             'clear' => '是否清库(1:是,0:否)',
             'arrival_days' => '到货天数',
             'out_qty' => '出货量',
+            'out_qty_average' =>'日均出货量',
         ];
     }
 }

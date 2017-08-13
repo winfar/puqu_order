@@ -26,8 +26,17 @@ class UploadForm extends Model
 
     public function upload()
     {
+        $file_name = date('Ymd',time()).rand(1000,9999); //$this->file->baseName
+        return $this->uploadByFileName($file_name);
+    }
+
+    public function uploadByFileName($file_name)
+    {
+        if(empty($file_name)){
+            return false;
+        }
+
         if ($this->validate()) {
-            $file_name = date('Ymd',time()).rand(1000,9999); //$this->file->baseName
             $dir = 'uploads/';
             if (!file_exists($dir)) {
                 $this->createDir($dir);
