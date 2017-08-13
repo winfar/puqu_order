@@ -402,7 +402,7 @@ class GoodsController extends BaseController
                         // var_dump($data);exit;
 
                         foreach ($data as $key => $value) {
-                            $goods_stock_history = \backend\models\GoodsStockHistory::findOne(['code' => $value['code']]);
+                            $goods_stock_history = \backend\models\GoodsStockHistory::findOne(['code' => $value['code'],'stock_date' => $stock_date]);
                             if($goods_stock_history == null){
                                 //insert
                                 $goods_stock_history = new \backend\models\GoodsStockHistory();
