@@ -472,7 +472,7 @@ class GoodsController extends BaseController
                 'brand'=>$value[4], 
                 'price'=>$value[5], 
                 'stock_position'=>$value[6],
-                'stock'=>$value[7], 
+                'stock'=>empty($value[7]) ? 0 : $value[7], 
                 'clear'=>empty($value[8]) ? 0 : $value[8]=='是' ? 1 : 0, 
                 'arrival_days'=>empty($value[9]) ? 0 : $value[9], 
                 'status'=>1,
