@@ -170,10 +170,10 @@ class GoodsController extends BaseController
                 from goods g
                 left join goods_stock_history gsh on g.`code`=gsh.`code`
                 where gsh.stock_date <= UNIX_TIMESTAMP()
-                and gsh.stock_date >='.$start_time.'
+                and gsh.stock_date >'.$start_time.'
 				and g.clear=0
                 GROUP BY g.`code`
-                order by g.stock,out_qty';
+                order by gsh.stock_date desc,g.stock,out_qty';
 
         $dataProvider = new ActiveDataProvider([
             'query' => Goods::findBySql($sql),
