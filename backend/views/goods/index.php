@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->arrival_days; // 如果是数组数据则为 $data['name'] ，例如，使用 SqlDataProvider 的情形。
                 },
             ],
-            'status',
+            // 'status',
             // 'create_time:datetime',
             [
                 'attribute' => 'create_time',
