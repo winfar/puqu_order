@@ -25,13 +25,38 @@ use yii\helpers\Url;
             <td>清库款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>1])->count() ?></a></td>
           </tr>
           <tr>
-            <td>库存总额：<a href="#"><?= \backend\models\Goods::find()->sum('price') ?></a></td>
-            <td>流通款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>0])->sum('price') ?></a></td>
-            <td>清库款：<a href="#"><?php $rlt=\backend\models\Goods::find()->where(['clear'=>1])->sum('price'); echo is_null($rlt)?0:$rlt ?></a></td>
+            <?php $stock_amount = \backend\models\Goods::find()->sum('price*stock') ?>
+            <td>库存总额：<a href="#"><?= $stock_amount ?></a></td>
+            <td>流通款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>0])->sum('price*stock') ?></a></td>
+            <td>清库款：<a href="#"><?php $rlt=\backend\models\Goods::find()->where(['clear'=>1])->sum('price*stock'); echo is_null($rlt)?0:$rlt ?></a></td>
           </tr>
           <tr>
-            <td>缺货总数：<a href="#"><?=0000 ?></a></td>
-            <td>清库款库库存金额占比：<a href="#"><?=00 ?></a></td>
+            <?php
+              // static $days = 7;
+              // $start_time = strtotime(date('Ymd')) - 60 * 60 * 24 * $days;
+
+              // $common_days = 0;
+
+              // $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
+              // if($model_config){
+              //     $common_days = $model_config->value;
+              // }
+
+              // $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
+              //         from goods g
+              //         left join goods_stock_history gsh on g.`code`=gsh.`code`
+              //         where gsh.stock_date <= UNIX_TIMESTAMP()
+              //         and gsh.stock_date >'.$start_time.'
+              //         and g.clear=0
+              //         having is_stock_in<=0
+              //         GROUP BY g.`code`
+              //         order by gsh.stock_date desc,g.stock,out_qty';
+
+              // $goods_stock_count = \backend\models\Goods::findBySql($sql)->count();
+              $goods_stock_count=0;
+            ?>
+            <td>缺货总数：<a href="<?=Url::toRoute('goods/stock')?>"><?=$goods_stock_count ?></a></td>
+            <td>清库款库存金额占比：<a href="#"><?=round($rlt/$stock_amount*100,2) ?>%</a></td>
             <td></td>
           </tr>
         </table>
