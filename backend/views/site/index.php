@@ -56,7 +56,7 @@ use yii\helpers\Url;
               $goods_stock_count=0;
             ?>
             <td>缺货总数：<a href="<?=Url::toRoute('goods/stock')?>"><?=$goods_stock_count ?></a></td>
-            <td>清库款库存金额占比：<a href="#"><?=round($rlt/$stock_amount*100,2) ?>%</a></td>
+            <td>清库款库存金额占比：<a href="#"><?=$stock_amount==0 ? 0 : round($rlt/$stock_amount*100,2) ?>%</a></td>
             <td></td>
           </tr>
         </table>
