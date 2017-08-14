@@ -181,7 +181,7 @@ class GoodsController extends BaseController
                 and gsh.stock_date >'.$start_time.'
 				and g.clear=0 '.$condition.'
                 GROUP BY g.`code`
-                order by gsh.stock_date desc,g.stock,out_qty';
+                order by gsh.stock_date desc,is_stock_in,g.stock';
 
         $rows = Goods::findBySql($sql)->all();
         $totalCount = count($rows);
