@@ -29,6 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'pager'=>[
+            //'options'=>['class'=>'hidden']//关闭分页
+            'firstPageLabel'=>"«",
+            'prevPageLabel'=>'‹',
+            'nextPageLabel'=>'›',
+            'lastPageLabel'=>'»',
+        ],
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
             'id',

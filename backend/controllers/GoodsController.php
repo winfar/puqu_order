@@ -209,7 +209,7 @@ class GoodsController extends BaseController
             //     ],
             // ],
             'pagination' => [
-                'pageSize' => 15,
+                'pageSize' => 20,
             ],
         ]);
 
