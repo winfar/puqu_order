@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use backend\models\Goods;
 use yii\data\ActiveDataProvider;
+use yii\data\SqlDataProvider;
 use backend\controllers\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -151,7 +152,14 @@ class GoodsController extends BaseController
 
     public function actionStock(){
 
-        $days = Yii::$app->request->get('d');
+        $keywords = trim(Yii::$app->request->get('k'));
+
+        $condition = '';
+        if(!empty($keywords)){
+            $condition = ' and g.`name` like \'%'.$keywords.'%\' ';
+        }
+
+        $days = trim(Yii::$app->request->get('d'));
 
         if(empty($days)){
             $days = 7;
@@ -171,18 +179,53 @@ class GoodsController extends BaseController
                 left join goods_stock_history gsh on g.`code`=gsh.`code`
                 where gsh.stock_date <= UNIX_TIMESTAMP()
                 and gsh.stock_date >'.$start_time.'
-				and g.clear=0
+				and g.clear=0 '.$condition.'
                 GROUP BY g.`code`
                 order by gsh.stock_date desc,g.stock,out_qty';
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => Goods::findBySql($sql),
+        $rows = Goods::findBySql($sql)->all();
+        $totalCount = count($rows);
+
+        $dataProvider = new SqlDataProvider([
+            'sql' => $sql,
+            // 'params' => [':sex' => 1],
+            'totalCount' => $totalCount,
+            //'sort' =>false,//如果为假则删除排序
+            // 'sort' => [
+            //     'attributes' => [
+            //         'username' => [
+            //             'asc' => ['username' => SORT_ASC],
+            //             'desc' => ['username' => SORT_DESC],
+            //             'default' => SORT_DESC,
+            //             'label' => '用户名',
+            //         ],
+            //         'sex' => [
+            //             'asc' => ['sex' => SORT_ASC],
+            //             'desc' => ['sex' => SORT_DESC],
+            //             'default' => SORT_DESC,
+            //             'label' => '性别',
+            //         ],
+            //         'created_on'
+            //     ],
+            // ],
             'pagination' => [
-                'pageSize' => 20,
+                'pageSize' => 15,
             ],
         ]);
 
+
+        // $dataProvider = new ActiveDataProvider([
+        //     'query' => Goods::findBySql($sql),
+        //     'pagination' => [
+        //         'pageSize' => 20,
+        //     ],
+        // ]);
+
+
+
         return $this->render('stock', [
+            'models' => $dataProvider->getModels(),
+            'page' => $dataProvider->pagination,  
             'dataProvider' => $dataProvider,
         ]);
         
@@ -309,7 +352,7 @@ class GoodsController extends BaseController
             //库存周转天数
             $list[$key]['stock_turnover_days'] = $list[$key]['stock_turnover'] == 0 ? 120 : count($days) / $list[$key]['stock_turnover']; 
         }*/
-        var_dump($list);
+        // var_dump($list);
     }
 
     public function actionImport()  

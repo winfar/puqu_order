@@ -34,30 +34,69 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'pager'=>[
+            //'options'=>['class'=>'hidden']//关闭分页
+            'firstPageLabel'=>"«",
+            'prevPageLabel'=>'‹',
+            'nextPageLabel'=>'›',
+            'lastPageLabel'=>'»',
+        ],
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
             'id',
-            'code',
-            'name',
-            'stock',
-            'arrival_days',
-            'out_qty',
-            'out_qty_average',
+            [
+                'header'=> '<a href="javascript:;">商家编码</a>',
+                'value' => function ($data) {
+                    return $data['code']; 
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">商品名称</a>',
+                'value' => function ($data) {
+                    return $data['name']; 
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">实际库存数</a>',
+                'value' => function ($data) {
+                    return $data['stock']; 
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">到货天数</a>',
+                'value' => function ($data) {
+                    return $data['arrival_days']; 
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">出货量</a>',
+                'value' => function ($data) {
+                    return $data['out_qty']; 
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">日均销量</a>',
+                'value' => function ($data) {
+                    return round($data['out_qty_average'],1); 
+                },
+            ],
             [
                 'header'=> '<a href="javascript:;">是否需要进货</a>',
                 'format' => 'html',
                 'value' => function ($data) {
-                    $is_in = ($data->stock - $data->out_qty_average * ($data->arrival_days+1)) > 0 ? '' : '<span style="color:red">缺</span>';
+                    $is_in = ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : '<span style="color:red;font-weight:bold;">缺</span>';
                     return $is_in; 
                 },
             ],
             [
-                'header'=> '<a href="javascript:;">建议订货量</a>',
+                'header'=> '<a href="javascript:;">建议进货量</a>',
                 'value' => function ($data) {
-                    return $data->out_qty_average * 15; 
+                    return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : ceil($data['out_qty_average'] * 15); 
+                    return '';
                 },
             ]
         ],
+        
     ]); ?>
 </div>
 <script>
