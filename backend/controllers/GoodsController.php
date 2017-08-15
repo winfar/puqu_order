@@ -152,6 +152,8 @@ class GoodsController extends BaseController
 
     public function actionStock(){
 
+        // $export = trim(Yii::$app->request->get('export'));
+
         $keywords = trim(Yii::$app->request->get('k'));
 
         $condition = '';
@@ -163,6 +165,13 @@ class GoodsController extends BaseController
 
         if(empty($days)){
             $days = 7;
+        }
+
+        $having = ' having is_stock_in<=0';
+        $is_show = trim(Yii::$app->request->get('s'));
+
+        if($is_show=='0'){
+            $having = '';
         }
 
         $start_time = strtotime(date('Ymd')) - 60 * 60 * 24 * $days;
@@ -180,7 +189,7 @@ class GoodsController extends BaseController
                 where gsh.stock_date <= UNIX_TIMESTAMP()
                 and gsh.stock_date >'.$start_time.'
 				and g.clear=0 '.$condition.'
-                GROUP BY g.`code`
+                GROUP BY g.`code`'.$having.'
                 order by gsh.stock_date desc,is_stock_in,g.stock';
 
         $rows = Goods::findBySql($sql)->all();
@@ -213,146 +222,11 @@ class GoodsController extends BaseController
             ],
         ]);
 
-
-        // $dataProvider = new ActiveDataProvider([
-        //     'query' => Goods::findBySql($sql),
-        //     'pagination' => [
-        //         'pageSize' => 20,
-        //     ],
-        // ]);
-
-
-
         return $this->render('stock', [
             'models' => $dataProvider->getModels(),
             'page' => $dataProvider->pagination,  
             'dataProvider' => $dataProvider,
         ]);
-        
-        /*
-        $goods = Goods::find()->orderBy('create_time desc,id desc')->all();
-        // $data = \backend\models\GoodsStockHistory::find()->orderBy('create_date,id')->all();
-        
-
-        foreach ($goods as $key => $value) {
-            $condition=['goods_id'=>$value->id];
-            $data = \backend\models\GoodsStockRecord::find()->andWhere($condition)->orderBy('create_time,id')->all();
-
-            $list[$key]['id'] = $value->id;
-            $list[$key]['code'] = $value->code;
-            $list[$key]['name'] = $value->name;
-            $list[$key]['stock'] = $value->stock;
-
-            $arrival_days = $value->arrival_days;
-
-            if($arrival_days == 0){
-                
-                if($common_days == 0){
-                    $model_config = \backend\models\Config::findOne(['name'=>'GOODS_ARRIVAL_DAYS']);
-                    if($model_config){
-                        $common_days = $model_config->value;
-                    }
-                }
-
-                $arrival_days = $common_days;
-            }
-
-            $list[$key]['arrival_days'] = $arrival_days;
-
-            $stock_curr = $value->stock;
-            $stock_in=0;
-            $stock_out=0;
-            $stock_tmp=0;
-            foreach ($data as $k => $v) {
-
-                if($v->stock_after > $stock_tmp){
-                    $stock_out += $v->stock_after - $stock_tmp;
-                }
-
-                // if($day_stock < $stock_tmp){
-                //     $stock_out += $stock_tmp - $day_stock;
-                // }
-
-                $stock_tmp = $v->stock_after;
-            }
-            
-        }
-*/
-        /*
-        foreach ($goods as $key => $value) {
-
-            // echo '$value->id:'.$value->id . '<br>';
-
-            $list[$key]['id'] = $value->id;
-            $list[$key]['code'] = $value->code;
-            $list[$key]['name'] = $value->name;
-            $list[$key]['stock'] = $value->stock;
-            $days = [];
-            $stock_average=0;
-            $stock_sum=0;
-            $stock_first=0;
-            $stock_last=0;
-            $stock_in=0;
-            $stock_out=0;
-            $stock_tmp=0;
-            foreach ($data as $k => $v) {
-                // echo '$v->goods_id_stocks:',$v->goods_id_stocks . '<br>';
-                
-                $id_in_str = strstr($v->goods_id_stocks,$value->id.'|');
-
-                // echo '$id_in_str:'.$id_in_str. '<br>';
-
-                $day_stock = 0;
-                if(strlen($id_in_str) > 0){
-                    if(strpos($id_in_str, ',')){
-                        $day_stock = explode('|',strstr($id_in_str,',',true))[1];
-                    }
-                    else{
-                        $day_stock = explode('|',$id_in_str)[1];
-                    }
-
-                    // echo '$day_stock:'.$day_stock. '<br>';
-                }
-                array_push($days,intval($day_stock));
-                // $list[$key][$v->create_date] = intval($day_stock);
-
-                // $stock_sum = $stock_sum + $day_stock;
-
-                if($day_stock > $stock_tmp){
-                    $stock_in += $day_stock - $stock_tmp;
-                }
-
-                if($day_stock < $stock_tmp){
-                    $stock_out += $stock_tmp - $day_stock;
-                }
-
-                $stock_tmp = $day_stock;
-
-                if($k==0){
-                    $stock_first = $day_stock;
-                }
-
-                if($k==count($data)-1){
-                    $stock_last = $day_stock;
-                }
-            }
-            $list[$key]['days'] = $days;
-
-            // $list[$key]['stock_sum'] = $stock_sum;
-
-            //也可以时间内最大值减去最后一天的值为当前进货数
-            $list[$key]['stock_in'] = $stock_in;
-            $list[$key]['stock_out'] = $stock_out;
-            //平均存货量
-            $stock_average = $stock_first + $stock_last / 2;
-            $stock_average = $stock_average == 0 ? $stock_in / count($days) : $stock_average;
-            $list[$key]['stock_average'] = $stock_average;
-            //库存周转率
-            $list[$key]['stock_turnover'] = $stock_average == 0 ? 0 : $stock_out / $stock_average;
-            //库存周转天数
-            $list[$key]['stock_turnover_days'] = $list[$key]['stock_turnover'] == 0 ? 120 : count($days) / $list[$key]['stock_turnover']; 
-        }*/
-        // var_dump($list);
     }
 
     public function actionImport()  
@@ -550,5 +424,114 @@ class GoodsController extends BaseController
 
         // var_dump($tdata);exit;
         return $tdata;
+    }
+
+    private function actionExportStock(){
+
+        $objectPHPExcel = new \PHPExcel();
+        $objectPHPExcel->setActiveSheetIndex(0);
+    
+        $page_size = 52;
+        $model = new NewsSearch();
+        $dataProvider = $model->search();
+        $dataProvider->setPagination(false);
+        $data = $dataProvider->getData();
+        $count = $dataProvider->getTotalItemCount();
+        $page_count = (int)($count/$page_size) +1;
+        $current_page = 0;
+        $n = 0;
+        foreach ( $data as $product )
+        {
+            if ( $n % $page_size === 0 )
+            {
+                $current_page = $current_page +1;
+    
+                //报表头的输出
+                $objectPHPExcel->getActiveSheet()->mergeCells('B1:G1');
+                $objectPHPExcel->getActiveSheet()->setCellValue('B1','产品信息表');
+    
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('B2','产品信息表');
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('B2','产品信息表');
+                $objectPHPExcel->setActiveSheetIndex(0)->getStyle('B1')->getFont()->setSize(24);
+                $objectPHPExcel->setActiveSheetIndex(0)->getStyle('B1')
+                    ->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('B2','日期：'.date("Y年m月j日"));
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('G2','第'.$current_page.'/'.$page_count.'页');
+                $objectPHPExcel->setActiveSheetIndex(0)->getStyle('G2')
+                    ->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+                    
+                //表格头的输出
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('B3','编号');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(6.5);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('C3','名称');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(17);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('D3','生产厂家');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(22);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('E3','单位');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('F3','单价');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+                $objectPHPExcel->setActiveSheetIndex(0)->setCellValue('G3','在库数');
+                $objectPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
+                    
+                //设置居中
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3')
+                    ->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    
+                //设置边框
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3' )
+                    ->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3' )
+                    ->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3' )
+                    ->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3' )
+                    ->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3' )
+                    ->getBorders()->getVertical()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+    
+                //设置颜色
+                $objectPHPExcel->getActiveSheet()->getStyle('B3:G3')->getFill()
+                    ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FF66CCCC');
+                    
+            }
+            //明细的输出
+            $objectPHPExcel->getActiveSheet()->setCellValue('B'.($n+4) ,$product->id);
+            $objectPHPExcel->getActiveSheet()->setCellValue('C'.($n+4) ,$product->product_name);
+            $objectPHPExcel->getActiveSheet()->setCellValue('D'.($n+4) ,$product->product_agent->name);
+            $objectPHPExcel->getActiveSheet()->setCellValue('E'.($n+4) ,$product->unit);
+            $objectPHPExcel->getActiveSheet()->setCellValue('F'.($n+4) ,$product->unit_price);
+            $objectPHPExcel->getActiveSheet()->setCellValue('G'.($n+4) ,$product->library_count);
+            //设置边框
+            $currentRowNum = $n+4;
+            $objectPHPExcel->getActiveSheet()->getStyle('B'.($n+4).':G'.$currentRowNum )
+                    ->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $objectPHPExcel->getActiveSheet()->getStyle('B'.($n+4).':G'.$currentRowNum )
+                    ->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $objectPHPExcel->getActiveSheet()->getStyle('B'.($n+4).':G'.$currentRowNum )
+                    ->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $objectPHPExcel->getActiveSheet()->getStyle('B'.($n+4).':G'.$currentRowNum )
+                    ->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $objectPHPExcel->getActiveSheet()->getStyle('B'.($n+4).':G'.$currentRowNum )
+                    ->getBorders()->getVertical()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $n = $n +1;    
+        }
+    
+        //设置分页显示
+        //$objectPHPExcel->getActiveSheet()->setBreak( 'I55' , PHPExcel_Worksheet::BREAK_ROW );
+        //$objectPHPExcel->getActiveSheet()->setBreak( 'I10' , PHPExcel_Worksheet::BREAK_COLUMN );
+        $objectPHPExcel->getActiveSheet()->getPageSetup()->setHorizontalCentered(true);
+        $objectPHPExcel->getActiveSheet()->getPageSetup()->setVerticalCentered(false);
+    
+    
+        ob_end_clean();
+        ob_start();
+    
+        header('Content-Type : application/vnd.ms-excel');
+        header('Content-Disposition:attachment;filename="'.'产品信息表-'.date("Y年m月j日").'.xls"');
+        $objWriter= PHPExcel_IOFactory::createWriter($objectPHPExcel,'Excel5');
+        $objWriter->save('php://output');
     }
 }

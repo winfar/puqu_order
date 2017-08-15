@@ -14,13 +14,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php $form = ActiveForm::begin();?>
     <div style="margin-top:20px;">
-        <select id="date-range" name="date-range" class="">
+        <label for="date-range">日期间隔：</label>
+        <select id="date-range" name="date-range" class="" style="width:150px;padding:2px 0;">
             <option value="7">7天</option>
             <option value="30">30天</option>
             <option value="60">60天</option>
             <option value="90">90天</option>
         </select>
         <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="is_show" name="is_show" <?=(Yii::$app->request->get('s')=='' || Yii::$app->request->get('s')=='1') ?'checked="checked"':''?>  >只看缺货</input>
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <!-- <input type="submit" value="查询" class="btn btn-success"> -->
         <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
         <?= Html::a('导入库存', ['import-stock'], ['class' => 'btn btn-success']) ?>
@@ -107,6 +111,8 @@ $this->params['breadcrumbs'][] = $this->title;
             var url = location.href;
             var k = $.trim($('#keywords').val());
             var d = $('#date-range').val();
+            var s = $("#is_show").prop('checked') ? "1" : "0";
+
             
             if(url.indexOf("&k=") > 0){
                 url = changeUrlArg(url, "k", k);
@@ -118,6 +124,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 url = changeUrlArg(url, "d", d);
             }else{
                 url += "&d=" + d;
+            }
+
+            if(url.indexOf("&s=") > 0){
+                url = changeUrlArg(url, "s", s);
+            }else{
+                url += "&s=" + s;
             }
             
             location.href = url;
