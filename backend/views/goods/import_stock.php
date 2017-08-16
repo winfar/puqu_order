@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '商品库存导入';
+$this->title = '';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="goods-import-stock">
@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::input('text','date',date('Y-m-d',time() - 60 * 60 * 24),['id'=>'date', 'class' => '', 'placeholder'=>'导入库存日期']);?>
             <?= empty($error_msg) ? '' : $error_msg ?>
             <br><br>
-            <?= Html::submitButton('导入商品库存', ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton('导入', ['class' => 'btn btn-primary']) ?>
         </div>
         <?php $form = ActiveForm::end(); ?>
     </p>

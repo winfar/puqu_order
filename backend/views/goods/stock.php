@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '库存信息';
+$this->title = '';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="goods-index" style="margin: 15px;">
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         &nbsp;&nbsp;&nbsp;&nbsp;
         <!-- <input type="submit" value="查询" class="btn btn-success"> -->
         <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
-        <?= Html::a('导入库存', ['import-stock'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('日销量导入', ['import-stock'], ['class' => 'btn btn-success']) ?>
         <p class="pull-right">
             是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15
             
