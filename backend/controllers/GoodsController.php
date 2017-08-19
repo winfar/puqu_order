@@ -294,6 +294,7 @@ class GoodsController extends BaseController
     public function actionImportStock(){
         $model_upload = new \common\models\UploadForm();
         $error_msg = '';
+        $stock_date = '';
 
         if(Yii::$app->request->isPost){
             $stock_date = Yii::$app->request->post('date');
@@ -340,6 +341,14 @@ class GoodsController extends BaseController
                     } 
                 }   
             }    
+        }
+        else{
+            $stock_date = strtotime(date('Ymd')) - 60 * 60 * 24;
+            $goods_stock_history_count = \backend\models\GoodsStockHistory::find(['stock_date' => $stock_date])->count();
+
+            if($goods_stock_history_count > 0){
+                $error_msg = date('Y-m-d',strtotime('-1 day')) . ' 数据未导入';
+            }
         }   
 
         // $condition = [];

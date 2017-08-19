@@ -545,6 +545,7 @@ if($otherMenu == false){
 <script src="<?=Url::base()?>/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- datepicker -->
 <script src="<?=Url::base()?>/plugins/datepicker/bootstrap-datepicker.js"></script>
+<script src="<?=Url::base()?>/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js" charset="UTF-8"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="<?=Url::base()?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 <!-- Slimscroll -->

@@ -1,3 +1,7 @@
+.content-wrapper > div{
+    margin: 15px;
+}
+
 .sidebar-menu .treeview-menu>li>a{
     font-size: 12px;
 }
