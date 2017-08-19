@@ -18,7 +18,8 @@
         "yiisoft/yii2": ">=2.0.6",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "phpoffice/phpexcel": "*"
+        "phpoffice/phpexcel": "*",
+        "kartik-v/yii2-widget-datetimepicker": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -34,10 +35,5 @@
             "npm-asset-library": "vendor/npm",
             "bower-asset-library": "vendor/bower"
         }
-    },
-    "repositories": [
-        { "type": "composer", "url": "http://pkg.phpcomposer.com/repo/packagist/" },
-        // { "type": "composer", "url": "https://packagist.phpcomposer.com" },
-        { "packagist": false }
-    ]
+    }
 }
