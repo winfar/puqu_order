@@ -79,7 +79,7 @@ class Goods extends \yii\db\ActiveRecord
             'clear' => '是否清库(1:是,0:否)',
             'arrival_days' => '到货天数',
             'out_qty' => '出货量',
-            'out_qty_average' =>'日均出货量',
+            'out_qty_average' =>'日均销量',
         ];
     }
 }

@@ -28,16 +28,18 @@ $this->params['breadcrumbs'][] = $this->title;
         <!-- <input type="submit" value="查询" class="btn btn-success"> -->
         <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
         <?= Html::a('日销量导入', ['import-stock'], ['class' => 'btn btn-success']) ?>
+        <a id="btn_export" href="javascript:;" class="btn btn-success" target="_blank">导出</a>
         <p class="pull-right">
-            是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15
-            
-            <!-- <?= Html::a('导出', ['export'], ['class' => 'btn btn-success']) ?> -->
+            <!-- 是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15             -->
         </p>
     </div>
     <?php ActiveForm::end(); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'options' => ['class' => 'grid-view table-responsive'],
+        // 'layout' => "{summary}\n{items}\n{pager}",
+        // 'summary' => '{begin}-{end}，共{totalCount}条数据，共{pageCount}页',
         'pager'=>[
             //'options'=>['class'=>'hidden']//关闭分页
             'firstPageLabel'=>"«",
@@ -95,8 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'header'=> '<a href="javascript:;">建议进货量</a>',
                 'value' => function ($data) {
-                    return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : ceil($data['out_qty_average'] * 15); 
-                    return '';
+                    return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : ceil($data['out_qty_average'] * 15);
                 },
             ]
         ],
@@ -104,35 +105,53 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 </div>
 <script>
+    function gotoUrl(isExport){
+        //
+
+        var url = location.href;
+        var k = $.trim($('#keywords').val());
+        var d = $('#date-range').val();
+        var s = $("#is_show").prop('checked') ? "1" : "0";
+
+        
+        if(url.indexOf("&k=") > 0){
+            url = changeUrlArg(url, "k", k);
+        }else{
+            url += "&k=" + k;
+        }
+
+        if(url.indexOf("&d=") > 0){
+            url = changeUrlArg(url, "d", d);
+        }else{
+            url += "&d=" + d;
+        }
+
+        if(url.indexOf("&s=") > 0){
+            url = changeUrlArg(url, "s", s);
+        }else{
+            url += "&s=" + s;
+        }
+
+        if(isExport == true){
+            if(url.indexOf("&export=") > 0){
+                url = changeUrlArg(url, "export", "true");
+            }else{
+                url += "&export=true";
+            }
+        }
+        
+        location.href = url;
+    }
+
     $(function(){    
-        $('#date-range').val(<?= Yii::$app->request->get('d') ?>);    
+        $('#date-range').val(<?= Yii::$app->request->get('d') ?>);
+
         $("#btn_query").on('click',function(){
-            
-            var url = location.href;
-            var k = $.trim($('#keywords').val());
-            var d = $('#date-range').val();
-            var s = $("#is_show").prop('checked') ? "1" : "0";
+            gotoUrl(false);
+        });
 
-            
-            if(url.indexOf("&k=") > 0){
-                url = changeUrlArg(url, "k", k);
-            }else{
-                url += "&k=" + k;
-            }
-
-            if(url.indexOf("&d=") > 0){
-                url = changeUrlArg(url, "d", d);
-            }else{
-                url += "&d=" + d;
-            }
-
-            if(url.indexOf("&s=") > 0){
-                url = changeUrlArg(url, "s", s);
-            }else{
-                url += "&s=" + s;
-            }
-            
-            location.href = url;
+        $("#btn_export").on('click',function(){
+            gotoUrl(true);
         });
 
         var keywords = $('#keywords').val();
