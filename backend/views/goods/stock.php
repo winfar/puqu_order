@@ -13,26 +13,27 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="goods-index" style="margin: 15px;">
 
     <?php $form = ActiveForm::begin();?>
-    <div style="margin-top:20px;">
-        <label for="date-range">日期间隔：</label>
-        <select id="date-range" name="date-range" class="" style="width:150px;padding:2px 0;">
-            <option value="7">7天</option>
-            <option value="30">30天</option>
-            <option value="60">60天</option>
-            <option value="90">90天</option>
-        </select>
-        <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="checkbox" id="is_show" name="is_show" <?=(Yii::$app->request->get('s')=='' || Yii::$app->request->get('s')=='1') ?'checked="checked"':''?>  >只看缺货</input>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <!-- <input type="submit" value="查询" class="btn btn-success"> -->
-        <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
-        <?= Html::a('日销量导入', ['import-stock'], ['class' => 'btn btn-success']) ?>
-        <a id="btn_export" href="javascript:;" class="btn btn-success" target="_blank">导出</a>
-        <p class="pull-right">
-            <!-- 是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15             -->
-        </p>
-    </div>
+        <input type="hidden" id="id" name="id">
+        <div style="margin-top:20px;">
+            <label for="date-range">日期间隔：</label>
+            <select id="date-range" name="date-range" class="" style="width:150px;padding:2px 0;">
+                <option value="7">7天</option>
+                <option value="30">30天</option>
+                <option value="60">60天</option>
+                <option value="90">90天</option>
+            </select>
+            <?= Html::input('text','keywords',Yii::$app->request->get('k'),['id'=>'keywords', 'class' => '', 'placeholder'=>'商家编码/名称']);?>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" id="is_show" name="is_show" <?=(Yii::$app->request->get('s')=='' || Yii::$app->request->get('s')=='1') ?'checked="checked"':''?>  >只看缺货</input>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- <input type="submit" value="查询" class="btn btn-success"> -->
+            <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
+            <?= Html::a('日销量导入', ['import-stock'], ['class' => 'btn btn-success']) ?>
+            <a id="btn_export" href="javascript:;" class="btn btn-success" target="_blank">导出</a>
+            <p class="pull-right">
+                <!-- 是否需要进货 = 库存数-日均出货量*(预计到货天数+1)，建议订货量 = 日均出货量*15             -->
+            </p>
+        </div>
     <?php ActiveForm::end(); ?>
 
     <?= GridView::widget([
@@ -165,6 +166,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $("#btn_export").on('click',function(){
             gotoUrl(true);
+        });
+
+        $(".btn_stock_status").on('click',function(){
+            var rlt = confirm('确定要变更状态吗？');
+            if(rlt){
+                $("#id").val($(this).attr('gid'));
+                document.forms[0].action = '/backend/web/index.php?r=goods/update-express-status';
+                document.forms[0].submit();
+            }
+            else{
+                return false;
+            }
         });
 
         var keywords = $('#keywords').val();

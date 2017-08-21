@@ -234,6 +234,26 @@ class GoodsController extends BaseController
         }
     }
 
+    public function actionUpdateExpressStatus()
+    {
+        $id = Yii::$app->request->post('id');
+        
+        $model = $this->findModel($id);
+
+        if($model){
+            $model->express_status = $model->express_status == 0 ? 1 : 0;
+        }
+        
+        if ($model->save()) {
+            return $this->redirect(['stock']);
+        } else {
+            // return $this->render('stock', [
+            //     'model' => $model,
+            // ]);
+            echo 'actionUpdateExpressStatus error';
+        }
+    }
+
     public function actionImport()  {  
         $model = new \common\models\UploadForm();  
         // if ($model->load(Yii::$app->request->post())) {  
