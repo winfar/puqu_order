@@ -180,7 +180,7 @@ class GoodsController extends BaseController
             $common_days = $model_config->value;
         }
 
-        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
+        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days, g.express_status,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
                 from goods g
                 left join goods_stock_history gsh on g.`code`=gsh.`code`
                 where gsh.stock_date <= UNIX_TIMESTAMP()

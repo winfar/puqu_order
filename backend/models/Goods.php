@@ -46,7 +46,7 @@ class Goods extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'create_time', 'update_time', 'category_id', 'stock', 'clear', 'arrival_days'], 'integer'],
+            [['status', 'create_time', 'update_time', 'category_id', 'stock', 'clear', 'arrival_days', 'express_status'], 'integer'],
             [['price'], 'number'],
             [['name', 'specification'], 'string', 'max' => 128],
             [['code', 'barcode', 'stock_position'], 'string', 'max' => 32],
@@ -78,6 +78,7 @@ class Goods extends \yii\db\ActiveRecord
             'stock_position' => '库位',
             'clear' => '是否清库(1:是,0:否)',
             'arrival_days' => '到货天数',
+            'express_status' => '物流状态',
             'out_qty' => '出货量',
             'out_qty_average' =>'日均销量',
         ];

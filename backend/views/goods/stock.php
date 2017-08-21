@@ -88,9 +88,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'header'=> '<a href="javascript:;">是否需要进货</a>',
-                'format' => 'html',
+                'format' => 'raw',
                 'value' => function ($data) {
-                    $is_in = ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : '<span style="color:red;font-weight:bold;">缺</span>';
+                    $express_status = $data['express_status'] == 1 ? '在途' : '未进货';
+
+                    $col_is_in = '<span style="color:red;font-weight:bold;">缺</span>';
+                    $col_is_in .= '&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn_stock_status" href="javascript:;" gid="' .$data['id'] . '" title="' . $express_status . '">' . $express_status . '</a>';
+
+                    $is_in = ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : $col_is_in;
                     return $is_in; 
                 },
             ],
@@ -99,7 +104,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($data) {
                     return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : ceil($data['out_qty_average'] * 15);
                 },
-            ]
+            ],
+            // [
+            //     'label'=>'操作',
+            //     'format'=>'raw',
+            //     'value' => function($data){
+            //         $url = "http://www.baidu.com";
+            //         return Html::a('已进货', $url, ['title' => '已进货']); 
+            //     }
+            // ]        
         ],
         
     ]); ?>

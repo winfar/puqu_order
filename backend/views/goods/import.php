@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="goods-import">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
     <p>
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
@@ -20,8 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <br><br>
             <!--<input type="file" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">-->
             <?= $form->field($model, 'file')->fileInput(['accept'=>'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) ?>
-            <br><br>
-            <?= Html::submitButton('import', ['class' => 'btn btn-primary']) ?>
+            <br>
+            <?= Html::submitButton('导入', ['class' => 'btn btn-primary']) ?>
         </div>
         <?php $form = ActiveForm::end(); ?>
     </p>
