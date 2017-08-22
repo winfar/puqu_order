@@ -16,6 +16,8 @@ use Yii;
  */
 class GoodsStockHistory extends \yii\db\ActiveRecord
 {
+    public $name;
+
     /**
      * @inheritdoc
      */
@@ -42,6 +44,7 @@ class GoodsStockHistory extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'name' => '商品名称',
             'create_time' => '创建时间',
             'update_time' => '修改时间',
             'stock_date' => '库存日期',

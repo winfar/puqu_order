@@ -26,6 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             &nbsp;&nbsp;&nbsp;&nbsp;
             <input type="checkbox" id="is_show" name="is_show" <?=(Yii::$app->request->get('s')=='' || Yii::$app->request->get('s')=='1') ?'checked="checked"':''?>  >只看缺货</input>
             &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" id="is_in_show" name="is_in_show" <?=(Yii::$app->request->get('is')=='' || Yii::$app->request->get('is')=='1') ?'checked="checked"':''?>  >只看未进货</input>
+            &nbsp;&nbsp;&nbsp;&nbsp;
             <!-- <input type="submit" value="查询" class="btn btn-success"> -->
             <a id="btn_query" href="javascript:;" class="btn btn-success" target="_blank">查询</a>
             <?= Html::a('日销量导入', ['import-stock'], ['class' => 'btn btn-success']) ?>
@@ -126,6 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
         var k = $.trim($('#keywords').val());
         var d = $('#date-range').val();
         var s = $("#is_show").prop('checked') ? "1" : "0";
+        var is = $("#is_in_show").prop('checked') ? "1" : "0";
 
         
         if(url.indexOf("&k=") > 0){
@@ -144,6 +147,12 @@ $this->params['breadcrumbs'][] = $this->title;
             url = changeUrlArg(url, "s", s);
         }else{
             url += "&s=" + s;
+        }
+
+        if(url.indexOf("&is=") > 0){
+            url = changeUrlArg(url, "is", is);
+        }else{
+            url += "&is=" + is;
         }
 
         if(isExport == true){

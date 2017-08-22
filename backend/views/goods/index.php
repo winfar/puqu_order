@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'options' => ['class' => 'grid-view table-responsive'],
         'pager'=>[
             //'options'=>['class'=>'hidden']//关闭分页
             'firstPageLabel'=>"«",

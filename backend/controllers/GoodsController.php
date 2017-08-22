@@ -171,6 +171,11 @@ class GoodsController extends BaseController
             $having = '';
         }
 
+        $is_in_show = trim(Yii::$app->request->get('is'));
+        if($is_in_show == '' ||  $is_in_show == '1'){
+            $condition .= ' and g.express_status=0';
+        }
+
         $start_time = strtotime(date('Ymd')) - 60 * 60 * 24 * $days;
 
         $common_days = 0;
@@ -187,7 +192,7 @@ class GoodsController extends BaseController
                 and gsh.stock_date >'.$start_time.'
 				and g.clear=0 '.$condition.'
                 GROUP BY g.`code`'.$having.'
-                order by g.stock,is_stock_in';
+                order by g.stock,out_qty desc';
 
         $rows = Goods::findBySql($sql)->all();
         $totalCount = count($rows);
