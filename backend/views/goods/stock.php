@@ -93,11 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'header'=> '<a href="javascript:;">是否需要进货</a>',
                 'format' => 'raw',
                 'value' => function ($data) {
-                    $express_status = $data['express_status'] == 1 ? '在途' : '未进货';
-
                     $col_is_in = '<span style="color:red;font-weight:bold;">缺</span>';
-                    $col_is_in .= '&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn_stock_status" href="javascript:;" gid="' .$data['id'] . '" title="' . $express_status . '">' . $express_status . '</a>';
-
                     $is_in = ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : $col_is_in;
                     return $is_in; 
                 },
@@ -106,6 +102,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'header'=> '<a href="javascript:;">建议进货量</a>',
                 'value' => function ($data) {
                     return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : ceil($data['out_qty_average'] * 15);
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">状态</a>',
+                'format' => 'raw',
+                'value' => function ($data) {
+                    $express_status = $data['express_status'] == 1 ? '在途' : '未进货';
+                    $col_is_in = '<a class="btn_stock_status" href="javascript:;" gid="' .$data['id'] . '" title="' . $express_status . '">' . $express_status . '</a>';
+                    return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : $col_is_in;
                 },
             ],
             // [
@@ -120,6 +125,41 @@ $this->params['breadcrumbs'][] = $this->title;
         
     ]); ?>
 </div>
+
+<div class="modal fade" id="edit_dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
+				<h3>修改状态</h3>
+			</div>
+			<div class="modal-body">
+                <?php $form = \yii\bootstrap\ActiveForm::begin(["id" => "stock-form", "class"=>"form-horizontal", "action"=> \yii\helpers\Url::toRoute("goods/express-status")]); ?>                      
+                <input type="hidden" class="form-control" id="id" name="id" />
+                <div id="express_status_div" class="form-group">
+                    <label for="express_status" class="col-sm-2 control-label">状态</label>
+                    <div class="col-sm-10">
+                    <label><input name="express_status" type="radio" value="0" />未进货 </label> 
+                    <label><input name="express_status" type="radio" value="1" />在途 </label> 
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="remark_div" class="form-group">
+                    <label for="remark" class="col-sm-2 control-label">备注</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="remark" name="remark" placeholder="" />
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <?php \yii\bootstrap\ActiveForm::end(); ?>
+            </div> 
+            <div class="modal-footer">
+				<a href="#" class="btn btn-default" data-dismiss="modal">关闭</a> 
+                <a id="edit_dialog_ok" href="#" class="btn btn-primary">确定</a>
+			</div> 
+        </div>   
+    </div> 
+</div>    
 <script>
     function gotoUrl(isExport){
         //
@@ -185,7 +225,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 document.forms[0].submit();
             }
             else{
-                return false;
+                $('#edit_dialog').modal('show');
+                // return false;
             }
         });
 
