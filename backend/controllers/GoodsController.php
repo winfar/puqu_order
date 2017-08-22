@@ -375,7 +375,7 @@ class GoodsController extends BaseController
             $stock_date = strtotime(date('Ymd')) - 60 * 60 * 24;
             $goods_stock_history_count = \backend\models\GoodsStockHistory::find(['stock_date' => $stock_date])->count();
 
-            if($goods_stock_history_count > 0){
+            if($goods_stock_history_count == 0){
                 $error_msg = date('Y-m-d',strtotime('-1 day')) . ' 数据未导入';
             }
         }   
