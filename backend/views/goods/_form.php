@@ -37,6 +37,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'stock_position')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'arrival_days')->textInput(['maxlength' => true])->hint('到货天数值为0时则读取公共定义的天数') ?>
+
     <?= $form->field($model, 'clear')->checkBox() ?>
 
     <?= $form->field($model, 'status')->checkBox() ?>

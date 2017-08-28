@@ -185,7 +185,7 @@ class GoodsController extends BaseController
             $common_days = $model_config->value;
         }
 
-        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days, g.express_status,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
+        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days, g.express_status, g.express_status_notes, sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
                 from goods g
                 left join goods_stock_history gsh on g.`code`=gsh.`code`
                 where gsh.stock_date <= UNIX_TIMESTAMP()
@@ -239,23 +239,28 @@ class GoodsController extends BaseController
         }
     }
 
-    public function actionUpdateExpressStatus()
+    public function actionExpressStatus()
     {
-        $id = Yii::$app->request->post('id');
+        $id = Yii::$app->request->post('goods-status-id');
+        $express_status = Yii::$app->request->post('express_status');
+        $express_status_notes = Yii::$app->request->post('express_status_notes');
         
         $model = $this->findModel($id);
 
         if($model){
-            $model->express_status = $model->express_status == 0 ? 1 : 0;
-        }
-        
-        if ($model->save()) {
-            return $this->redirect(['stock']);
+            $model->express_status = $express_status;
+            $model->express_status_notes = $express_status_notes;
+
+            if ($model->save()) {
+                return $this->redirect(['stock']);
+            } else {
+                // return $this->render('stock', [
+                //     'model' => $model,
+                // ]);
+                echo '物流状态更新错误';
+            }
         } else {
-            // return $this->render('stock', [
-            //     'model' => $model,
-            // ]);
-            echo 'actionUpdateExpressStatus error';
+            echo '物流状态更新错误';
         }
     }
 

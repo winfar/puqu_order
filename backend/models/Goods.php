@@ -51,6 +51,7 @@ class Goods extends \yii\db\ActiveRecord
             [['name', 'specification'], 'string', 'max' => 128],
             [['code', 'barcode', 'stock_position'], 'string', 'max' => 32],
             [['category_name', 'brand', 'supplier'], 'string', 'max' => 64],
+            [['express_status_notes'], 'string', 'max' => 255],
             [['code'], 'unique'],
         ];
     }
@@ -79,6 +80,7 @@ class Goods extends \yii\db\ActiveRecord
             'clear' => '是否清库(1:是,0:否)',
             'arrival_days' => '到货天数',
             'express_status' => '物流状态',
+            'express_status_notes' => '物流状态备注',
             'out_qty' => '出货量',
             'out_qty_average' =>'日均销量',
         ];

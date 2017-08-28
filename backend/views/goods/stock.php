@@ -109,8 +109,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($data) {
                     $express_status = $data['express_status'] == 1 ? '在途' : '未进货';
-                    $col_is_in = '<a class="btn_stock_status" href="javascript:;" gid="' .$data['id'] . '" title="' . $express_status . '">' . $express_status . '</a>';
+                    $col_is_in = '<a class="btn_stock_status" href="javascript:;" gid="' .$data['id'] . '"express_status="' . $data['express_status'] . '" express_status_notes="' . $data['express_status_notes']  . '" title="' . $express_status . '">' . $express_status . '</a>';
                     return ($data['stock'] - $data['out_qty_average'] * ($data['arrival_days']+1)) > 0 ? '' : $col_is_in;
+                },
+            ],
+            [
+                'header'=> '<a href="javascript:;">备注</a>',
+                'value' => function ($data) {
+                    return $data['express_status_notes'];
                 },
             ],
             // [
@@ -134,20 +140,27 @@ $this->params['breadcrumbs'][] = $this->title;
 				<h3>修改状态</h3>
 			</div>
 			<div class="modal-body">
-                <?php $form = \yii\bootstrap\ActiveForm::begin(["id" => "stock-form", "class"=>"form-horizontal", "action"=> \yii\helpers\Url::toRoute("goods/express-status")]); ?>                      
-                <input type="hidden" class="form-control" id="id" name="id" />
+                <?php $form = \yii\bootstrap\ActiveForm::begin(["id" => "stock-express-status-form", "class"=>"form-horizontal", "action"=> \yii\helpers\Url::toRoute("goods/express-status")]); ?>                      
                 <div id="express_status_div" class="form-group">
-                    <label for="express_status" class="col-sm-2 control-label">状态</label>
+                    <input type="hidden" class="form-control" id="goods-status-id" name="goods-status-id" />
+                    <label for="remark" class="col-sm-2 control-label">id</label>
                     <div class="col-sm-10">
-                    <label><input name="express_status" type="radio" value="0" />未进货 </label> 
-                    <label><input name="express_status" type="radio" value="1" />在途 </label> 
+                        <label class="form-control" id="lab-id" name="lab-id" /></label> 
                     </div>
                     <div class="clearfix"></div>
                 </div>
-                <div id="remark_div" class="form-group">
-                    <label for="remark" class="col-sm-2 control-label">备注</label>
+                <div id="express_status_div" class="form-group">
+                    <label for="express_status" class="col-sm-2 control-label">状态</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="remark" name="remark" placeholder="" />
+                        <label><input name="express_status" type="radio" value="0" />未进货 </label> 
+                        <label><input name="express_status" type="radio" value="1" />在途 </label> 
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="express_status_notes_div" class="form-group">
+                    <label for="express_status_notes" class="col-sm-2 control-label">备注</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="express_status_notes" name="express_status_notes" placeholder="物流状态备注" />
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -155,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div> 
             <div class="modal-footer">
 				<a href="#" class="btn btn-default" data-dismiss="modal">关闭</a> 
-                <a id="edit_dialog_ok" href="#" class="btn btn-primary">确定</a>
+                <a id="edit_dialog_ok" href="javascript:;" class="btn btn-primary">确定</a>
 			</div> 
         </div>   
     </div> 
@@ -217,24 +230,35 @@ $this->params['breadcrumbs'][] = $this->title;
             gotoUrl(true);
         });
 
-        $(".btn_stock_status").on('click',function(){
-            var rlt = confirm('确定要变更状态吗？');
-            if(rlt){
-                $("#id").val($(this).attr('gid'));
-                document.forms[0].action = '/backend/web/index.php?r=goods/update-express-status';
-                document.forms[0].submit();
-            }
-            else{
-                $('#edit_dialog').modal('show');
-                // return false;
-            }
-        });
-
         var keywords = $('#keywords').val();
         if(keywords != ""){
             var regexp = new RegExp(keywords,"gim");
             var objs = $(".grid-view > table:contains('"+keywords+"')");
             objs.html(objs.html().replace(regexp,"<b style='background-color:yellow'>"+keywords+"</b>"));
         }
+
+        $(".btn_stock_status").on('click',function(){
+            var rlt = true; // confirm('确定要变更状态吗？');
+            if(rlt){
+                $("#goods-status-id").val($(this).attr('gid'));
+
+                $("#lab-id").html($(this).attr('gid'));
+
+                var express_status = $(this).attr('express_status');
+                $("input[type=radio][value="+express_status+"]").attr("checked",'checked');
+
+                $("#express_status_notes").val($(this).attr('express_status_notes'));
+
+                $('#edit_dialog').modal('show');
+            }
+            else{
+                return false;
+            }
+        });
+
+        $('#edit_dialog_ok').click(function (e) {
+            e.preventDefault();
+            $('#stock-express-status-form').submit();
+        });
     });
 </script>
