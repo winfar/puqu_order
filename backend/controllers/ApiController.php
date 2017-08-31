@@ -141,7 +141,7 @@ class ApiController extends Controller
         // 同步类型（默认为全量更新）1-全量更新（即覆盖原库存）；2-增量更新（即增减原库存：正数为增，负数为减）；
         $sync_type = $_REQUEST['sync_type'];
 
-        if(empty($product_id) || empty($sku_id) || isset($qty) || empty($sync_type)){
+        if(empty($product_id) || empty($sku_id) || empty($sync_type)){
             $this->apiPrint(1,'参数错误');
         }
 
