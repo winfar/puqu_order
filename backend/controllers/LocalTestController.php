@@ -16,6 +16,14 @@ class LocalTestController extends \yii\base\Controller
 {
     public $layout = "lte_main";
 
+    public function actionTest1(){
+        $val = '0';
+
+        echo empty($val) ? 'empty' : 'not empty';
+        echo '<br>';
+        echo isset($val) ? 'isset' : 'not isset';
+    }
+
     public function actionSplit(){
         // echo strstr("Hello world!","world",true);exit;
         $list = [];
