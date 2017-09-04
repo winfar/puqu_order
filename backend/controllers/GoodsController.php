@@ -155,25 +155,26 @@ class GoodsController extends BaseController
         $export = trim(Yii::$app->request->get('export'));
         $condition = '';
 
-        $keywords = trim(Yii::$app->request->get('k'));
-        if(!empty($keywords)){
-            $condition = ' and g.`name` like \'%'.$keywords.'%\' ';
-        }
-
         $days = trim(Yii::$app->request->get('d'));
         if(empty($days)){
             $days = 7;
+        }
+
+        $is_in_show = trim(Yii::$app->request->get('is'));
+        if($is_in_show == '' ||  $is_in_show == '1'){
+            $condition .= ' and g.express_status=0';
+        }
+
+        $keywords = trim(Yii::$app->request->get('k'));
+        if(!empty($keywords)){
+            // $condition = ' and g.`name` like \'%'.$keywords.'%\' ';
+            $condition .= ' and (g.`code` LIKE \'%'.$keywords.'%\') OR (g.`name` LIKE \'%'.$keywords.'%\')';
         }
 
         $having = ' having is_stock_in<=0';
         $is_show = trim(Yii::$app->request->get('s'));
         if($is_show=='0'){
             $having = '';
-        }
-
-        $is_in_show = trim(Yii::$app->request->get('is'));
-        if($is_in_show == '' ||  $is_in_show == '1'){
-            $condition .= ' and g.express_status=0';
         }
 
         $start_time = strtotime(date('Ymd')) - 60 * 60 * 24 * $days;
@@ -185,7 +186,7 @@ class GoodsController extends BaseController
             $common_days = $model_config->value;
         }
 
-        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days, g.express_status, g.express_status_notes, sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
+        $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,IFNULL(sum(gsh.stock),0) out_qty,IFNULL(sum(gsh.stock),0)/'.$days.' out_qty_average, g.stock-IFNULL(sum(gsh.stock),0)/'.$days.'*' . $common_days . ' is_stock_in, g.express_status, g.express_status_notes
                 from goods g
                 left join goods_stock_history gsh on g.`code`=gsh.`code` and gsh.stock_date >'.$start_time.'
                 where g.clear=0 '.$condition.'
