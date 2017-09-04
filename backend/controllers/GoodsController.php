@@ -187,10 +187,8 @@ class GoodsController extends BaseController
 
         $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days, g.express_status, g.express_status_notes, sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
                 from goods g
-                left join goods_stock_history gsh on g.`code`=gsh.`code`
-                where gsh.stock_date <= UNIX_TIMESTAMP()
-                and gsh.stock_date >'.$start_time.'
-				and g.clear=0 '.$condition.'
+                left join goods_stock_history gsh on g.`code`=gsh.`code` and gsh.stock_date >'.$start_time.'
+                where g.clear=0 '.$condition.'
                 GROUP BY g.`code`'.$having.'
                 order by g.stock,out_qty desc';
 
