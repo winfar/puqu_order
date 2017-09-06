@@ -21,8 +21,8 @@ use yii\helpers\Url;
           </tr> -->
           <tr>
             <td>商品总数：<a href="<?=Url::toRoute('goods/index')?>"><?= \backend\models\Goods::find()->count() ?></a></td>
-            <td>流通款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>0])->count() ?></a></td>
-            <td>清库款：<a href="#"><?= \backend\models\Goods::find()->where(['clear'=>1])->count() ?></a></td>
+            <td>流通款：<a href="<?=Url::toRoute(['goods/index','c'=>'0'])?>"><?= \backend\models\Goods::find()->where(['clear'=>0])->count() ?></a></td>
+            <td>清库款：<a href="<?=Url::toRoute(['goods/index','c'=>'1'])?>"><?= \backend\models\Goods::find()->where(['clear'=>1])->count() ?></a></td>
           </tr>
           <tr>
             <?php $stock_amount = \backend\models\Goods::find()->sum('price*stock') ?>
@@ -42,14 +42,12 @@ use yii\helpers\Url;
                   $common_days = $model_config->value;
               }
 
-              $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,sum(gsh.stock) out_qty,sum(gsh.stock)/'.$days.' out_qty_average, g.stock-sum(gsh.stock)/'.$days.'*' . $common_days . ' is_stock_in
+              $sql = 'select g.id,g.`code`,g.`name`,g.stock,if(g.arrival_days=0,' . $common_days . ',g.arrival_days) arrival_days,IFNULL(sum(gsh.stock),0) out_qty,IFNULL(sum(gsh.stock),0)/'.$days.' out_qty_average, g.stock-IFNULL(sum(gsh.stock),0)/'.$days.'*' . $common_days . ' is_stock_in, g.express_status, g.express_status_notes
                       from goods g
-                      left join goods_stock_history gsh on g.`code`=gsh.`code`
-                      where gsh.stock_date <= UNIX_TIMESTAMP()
-                      and gsh.stock_date >'.$start_time.'
-                      and g.clear=0
+                      left join goods_stock_history gsh on g.`code`=gsh.`code` and gsh.stock_date >'.$start_time.'
+                      where g.clear=0 and g.express_status=0
                       GROUP BY g.`code` having is_stock_in<=0
-                      order by gsh.stock_date desc,g.stock,out_qty';
+                      order by g.stock,out_qty desc';
 
               // $rows = Goods::findBySql($sql)->all();
               $goods_stock_count = \backend\models\Goods::findBySql($sql)->count();

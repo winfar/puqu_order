@@ -39,6 +39,7 @@ class GoodsController extends BaseController
     public function actionIndex()
     {
         $keywords = trim(Yii::$app->request->get('k'));
+        $clear = trim(Yii::$app->request->get('c'));
         // var_dump($keywords);exit;
         $condition = [];
         if(!empty($keywords))
@@ -47,12 +48,16 @@ class GoodsController extends BaseController
                 'or',
                 ['like','code',$keywords],
                 ['like','name',$keywords],
-                // ['like','mobile',$mobile],
             ];
         }
 
+        $where = [];
+        if($clear == '0' || $clear == '1'){
+            $where['clear']=$clear;
+        }
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Goods::find()->andWhere($condition)->orderBy('create_time desc,code,id desc'),
+            'query' => Goods::find()->where($where)->andWhere($condition)->orderBy('create_time desc,code,id desc'),
         ]);
 
         return $this->render('index', [
